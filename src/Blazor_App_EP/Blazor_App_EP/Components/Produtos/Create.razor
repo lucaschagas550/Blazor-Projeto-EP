@@ -1,0 +1,70 @@
+﻿@page "/produtos/create"
+@using Blazor_App_EP.Data
+@using Microsoft.EntityFrameworkCore
+@using Blazor_App_EP.Components.Produtos
+@inject ApplicationDbContext context
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Produtos</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Produtos" OnValidSubmit="AddProdutos" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome:</label>
+                <InputText id="nome" @bind-Value="Produtos.Nome" class="form-control" />
+                <ValidationMessage For="() => Produtos.Nome" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="descricao" class="form-label">Descricao:</label>
+                <InputText id="descricao" @bind-Value="Produtos.Descricao" class="form-control" />
+                <ValidationMessage For="() => Produtos.Descricao" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="categoria" class="form-label">Categoria:</label>
+                <InputText id="categoria" @bind-Value="Produtos.Categoria" class="form-control" />
+                <ValidationMessage For="() => Produtos.Categoria" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="preco" class="form-label">Preco:</label>
+                <InputNumber id="preco" @bind-Value="Produtos.Preco" class="form-control" />
+                <ValidationMessage For="() => Produtos.Preco" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="disponivelestoque" class="form-label">DisponivelEstoque:</label>
+                <InputCheckbox id="disponivelestoque" @bind-Value="Produtos.DisponivelEstoque" class="form-check-input" />
+                <ValidationMessage For="() => Produtos.DisponivelEstoque" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="datavalidade" class="form-label">DataValidade:</label>
+                <InputDate id="datavalidade" @bind-Value="Produtos.DataValidade" class="form-control" />
+                <ValidationMessage For="() => Produtos.DataValidade" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/produtos">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Produtos Produtos { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddProdutos()
+    {
+        context.Produtos.Add(Produtos);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/produtos");
+    }
+}

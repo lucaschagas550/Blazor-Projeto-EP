@@ -1,0 +1,42 @@
+﻿@page "/produtos"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Blazor_App_EP.Components.Produtos
+@using Blazor_App_EP.Data
+
+@implements IAsyncDisposable
+@inject ApplicationDbContext context
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="produtos/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="produtos">
+    <PropertyColumn Property="produtos => produtos.Nome" />
+    <PropertyColumn Property="produtos => produtos.Descricao" />
+    <PropertyColumn Property="produtos => produtos.Categoria" />
+    <PropertyColumn Property="produtos => produtos.Preco" />
+    <PropertyColumn Property="produtos => produtos.DisponivelEstoque" />
+    <PropertyColumn Property="produtos => produtos.DataValidade" />
+
+    <TemplateColumn Context="produtos">
+        <a href="@($"produtos/edit?id={produtos.Id}")">Edit</a> |
+        <a href="@($"produtos/details?id={produtos.Id}")">Details</a> |
+        <a href="@($"produtos/delete?id={produtos.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private IQueryable<Produtos> produtos;
+
+    protected override void OnInitialized()
+    {
+        produtos = context.Produtos.AsQueryable();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
