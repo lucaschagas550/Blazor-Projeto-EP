@@ -57,6 +57,8 @@ else
     app.UseMigrationsEndPoint();
 }
 
+app.UseStatusCodePagesWithReExecute("/error/{0}"); //Funciona bem porque aqui usamos WS para blazor
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
