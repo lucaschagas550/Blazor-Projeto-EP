@@ -1,5 +1,5 @@
-﻿@page "/produtos/edit"
-
+﻿@page "/produtos/editar/{id:int}"
+<!-- Ao clicar no botao acontece interacoes com servidor pelo websocket sem ter necessidade de JS -->
 @using Blazor_App_EP.Data
 @using Microsoft.EntityFrameworkCore
 @using Blazor_App_EP.Components.Produtos
@@ -13,7 +13,7 @@
 
 <h2>Produtos</h2>
 <hr />
-@if (Produtos is null)
+@if (Produto is null)
 {
     <p><em>Loading...</em></p>
 }
@@ -21,61 +21,73 @@ else
 {
     <div class="row">
         <div class="col-md-4">
-            <EditForm method="post" Model="Produtos" OnValidSubmit="UpdateProdutos" FormName="edit" Enhance>
+            <EditForm method="post" Model="Produto" OnValidSubmit="UpdateProdutos" FormName="edit" Enhance>
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <input type="hidden" name="Produtos.Id" value="@Produtos.Id" />
+                
+                <input type="hidden" name="Produto.Id" value="@Produto.Id" />
+
                 <div class="mb-3">
                     <label for="nome" class="form-label">Nome:</label>
-                    <InputText id="nome" @bind-Value="Produtos.Nome" class="form-control" />
-                    <ValidationMessage For="() => Produtos.Nome" class="text-danger" />
+                    <InputText id="nome" @bind-Value="Produto.Nome" class="form-control" />
+                    <ValidationMessage For="() => Produto.Nome" class="text-danger" />
                 </div>
                 <div class="mb-3">
                     <label for="descricao" class="form-label">Descricao:</label>
-                    <InputText id="descricao" @bind-Value="Produtos.Descricao" class="form-control" />
-                    <ValidationMessage For="() => Produtos.Descricao" class="text-danger" />
+                    <InputText id="descricao" @bind-Value="Produto.Descricao" class="form-control" />
+                    <ValidationMessage For="() => Produto.Descricao" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="categoria" class="form-label">Categoria:</label>
-                    <InputText id="categoria" @bind-Value="Produtos.Categoria" class="form-control" />
-                    <ValidationMessage For="() => Produtos.Categoria" class="text-danger" />
+                    <label class="form-label">
+                        Categoria:
+                        <InputSelect class="form-select" @bind-Value="Produto!.Categoria">
+                            <option value="">Selecione uma categoria...</option>
+                            @foreach (var categoria in Categorias)
+                            {
+                                <option value="@categoria">@categoria</option>
+                            }
+                        </InputSelect>
+                    </label>
                 </div>
                 <div class="mb-3">
                     <label for="preco" class="form-label">Preco:</label>
-                    <InputNumber id="preco" @bind-Value="Produtos.Preco" class="form-control" />
-                    <ValidationMessage For="() => Produtos.Preco" class="text-danger" />
+                    <InputNumber id="preco" @bind-Value="Produto.Preco" class="form-control" />
+                    <ValidationMessage For="() => Produto.Preco" class="text-danger" />
                 </div>
                 <div class="mb-3">
                     <label for="disponivelestoque" class="form-label">DisponivelEstoque:</label>
-                    <InputCheckbox id="disponivelestoque" @bind-Value="Produtos.DisponivelEstoque" class="form-check-input" />
-                    <ValidationMessage For="() => Produtos.DisponivelEstoque" class="text-danger" />
+                    <InputCheckbox id="disponivelestoque" @bind-Value="Produto.DisponivelEstoque" class="form-check-input" />
+                    <ValidationMessage For="() => Produto.DisponivelEstoque" class="text-danger" />
                 </div>
                 <div class="mb-3">
                     <label for="datavalidade" class="form-label">DataValidade:</label>
-                    <InputDate id="datavalidade" @bind-Value="Produtos.DataValidade" class="form-control" />
-                    <ValidationMessage For="() => Produtos.DataValidade" class="text-danger" />
+                    <InputDate id="datavalidade" @bind-Value="Produto.DataValidade" class="form-control" />
+                    <ValidationMessage For="() => Produto.DataValidade" class="text-danger" />
                 </div>
+
                 <button type="submit" class="btn btn-primary">Save</button>
+                <a class="btn btn-warning" href="/produtos">Voltar</a>
             </EditForm>
         </div>
     </div>
 }
 
-<div>
-    <a href="/produtos">Back to List</a>
-</div>
 
 @code {
-    [SupplyParameterFromQuery]
-    private int Id { get; set; }
+    [Parameter]
+    public int Id { get; set; }
 
     [SupplyParameterFromForm]
-    private Produtos? Produtos { get; set; }
+    private Produtos? Produto { get; set; }
+
+    private readonly List<string> Categorias = new() { "Eletrônicos", "Vestuário", "Alimentos" };
+
 
     protected override async Task OnInitializedAsync()
     {
+        Produto ??= await context.Produtos.FirstOrDefaultAsync(m => m.Id == Id);
 
-        if (Produtos is null)
+        if (Produto is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
@@ -85,7 +97,7 @@ else
     // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task UpdateProdutos()
     {
-        context.Attach(Produtos!).State = EntityState.Modified;
+        context.Attach(Produto!).State = EntityState.Modified;
 
         try
         {
@@ -93,7 +105,7 @@ else
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!ProdutosExists(Produtos!.Id))
+            if (!ProdutosExists(Produto!.Id))
             {
                 NavigationManager.NavigateTo("notfound");
             }

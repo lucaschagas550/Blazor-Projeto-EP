@@ -1,4 +1,7 @@
 ﻿@page "/produtos"
+@rendermode InteractiveServer
+<!-- Ao clicar no botao acontece interacoes com servidor pelo websocket sem ter necessidade de JS -->
+
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Blazor_App_EP.Components.Produtos
@@ -12,7 +15,7 @@
 <h1>Index</h1>
 
 <p>
-    <a href="produtos/create">Create New</a>
+    <a href="produtos/novo">Create New</a>
 </p>
 
 <QuickGrid Class="table" Items="produtos">
@@ -24,9 +27,9 @@
     <PropertyColumn Property="produtos => produtos.DataValidade" />
 
     <TemplateColumn Context="produtos">
-        <a href="@($"produtos/edit?id={produtos.Id}")">Edit</a> |
-        <a href="@($"produtos/details?id={produtos.Id}")">Details</a> |
-        <a href="@($"produtos/delete?id={produtos.Id}")">Delete</a>
+        <a href="@($"produtos/editar/{produtos.Id}")">Edit</a> |
+        <a href="@($"produtos/detalhes/{produtos.Id}")">Details</a> |
+        <a href="@($"produtos/excluir/{produtos.Id}")">Delete</a>
     </TemplateColumn>
 </QuickGrid>
 

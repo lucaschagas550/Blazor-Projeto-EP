@@ -1,4 +1,4 @@
-﻿@page "/produtos/delete"
+﻿@page "/produtos/excluir/{id:int}"
 
 @using Blazor_App_EP.Data
 @using Microsoft.EntityFrameworkCore
@@ -46,17 +46,17 @@
         </dl>
         <EditForm method="post" Model="produtos" OnValidSubmit="DeleteProdutos" FormName="delete" Enhance>
             <button type="submit" class="btn btn-danger" disabled="@(produtos is null)">Delete</button> |
-            <a href="/produtos">Back to List</a>
+            <a class="btn btn-warning" href="/produtos">Voltar</a>
         </EditForm>
     }
 </div>
 
 @code {
+    [Parameter]
+    public int Id { get; set; }
+    
     private Produtos? produtos;
-
-    [SupplyParameterFromQuery]
-    private int Id { get; set; }
-
+    
     protected override async Task OnInitializedAsync()
     {
         produtos = await context.Produtos.FirstOrDefaultAsync(m => m.Id == Id);
